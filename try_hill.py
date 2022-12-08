@@ -83,5 +83,3 @@ class HillProblem(SearchProblem, ABC):
 
 problem = HillProblem(initial_state=[start])  # ここでproblemにクラスを対応させている
 result = hill_climbing(problem)  # hill_climbingというメソッドを使っている。引数にproblemを入れている。
-
-# am
