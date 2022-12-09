@@ -1,3 +1,4 @@
+# 山登り法のサンプル
 from abc import ABC
 
 import numpy as np

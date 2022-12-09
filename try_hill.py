@@ -58,11 +58,7 @@ class HillProblem(SearchProblem, ABC):
         pos = random.randrange(len(state))
         dif = random.random() * 0.4 - 0.2
         list1 = np.array(state)
-        list1[pos] += dif  # このリストの形を崩して良いのか？
-        # newstate = np.average(state + 0.02)  # もう少し考える必要がありそう、平均ベクトルを使うならどうするべきか考える必要がありそう
-        # newstate2 = np.average(state - 0.02)
-        # list1.append(newstate)  # よくわからないが右に1個進めることを書いている、おそらく最大である20を超えないためのコード
-        # list1.append(newstate2)
+        list1[pos] += dif
 
         print("{} -> [{:.0f} {:.0f}]".format(query, v*50, v*50))
         print("list1", type(list1))
@@ -75,7 +71,7 @@ class HillProblem(SearchProblem, ABC):
         global query
         print("state", type(state))
         query = model.wv.similar_by_vector(vector=state, topn=2, restrict_vocab=None)[1][0]
-        # query = model.wv.similar(positive=state, topn=2, restrict_vocab=None)[1][0]
+        # query = model.wv.similar(positive=[state], topn=2, restrict_vocab=None)[1][0]
         global v
         v = return_rank(query)
         return v

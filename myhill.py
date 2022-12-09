@@ -1,3 +1,4 @@
+#　これは自分で山登り法を実装してみようとしたものの途中
 import numpy as np
 
 import requests
