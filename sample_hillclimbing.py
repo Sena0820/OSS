@@ -45,3 +45,4 @@ class HillProblem(SearchProblem, ABC):
 
 problem = HillProblem(initial_state=start)
 result = hill_climbing(problem)  # 結果は８であることに注意
+# print(start)
