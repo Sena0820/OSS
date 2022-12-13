@@ -9,11 +9,11 @@ import requests
 from bs4 import BeautifulSoup
 
 
-NUM_CANDIDATES = 5  # 一度に探索する単語の数
+NUM_CANDIDATES = 3  # 一度に探索する単語の数
 
 vectors = word2vec.Word2Vec.load("word2vec.gensim.model")
 
-target = "Python"
+target = "初心者"
 target_vector = vectors[target]
 
 
@@ -24,8 +24,8 @@ class QuerySearchProblem(SearchProblem):
         actions = []
         curr_vector = vectors.wv[curr_query]
         for _ in range(NUM_CANDIDATES):
-            new_vector = curr_vector + np.random.standard_normal(curr_vector.size)
-            # new_vector = curr_vector + 0.05
+            new_vector = curr_vector + (np.random.standard_normal(curr_vector.size))* 0.2
+            # new_vector = curr_vector + np.random.randint(0, 0.5, size=curr_vector.size)
             new_keywords = vectors.wv.similar_by_vector(new_vector)
             for k, _ in new_keywords:
                 # 現在のqueryと異なり，かつすでにクエリ候補に入っていない単語をクエリ候補とする
@@ -51,7 +51,7 @@ class QuerySearchProblem(SearchProblem):
         return v
 
 
-initial_query = "初"
+initial_query = "若手"
 problem = QuerySearchProblem(initial_state=initial_query)
 result = simulated_annealing(problem, iterations_limit=10, viewer=ConsoleViewer())
 # result = hill_climbing(problem, iterations_limit=50, viewer=ConsoleViewer())

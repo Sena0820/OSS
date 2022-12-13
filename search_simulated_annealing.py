@@ -70,7 +70,7 @@ class QuerySearchProblem(SearchProblem, ABC):
         actions = []
         curr_vector = vectors.wv[curr_query]
         for _ in range(NUM_CANDIDATES):
-            new_vector = curr_vector + np.random.standard_normal(curr_vector.size)
+            new_vector = curr_vector + (np.random.standard_normal(curr_vector.size))*0.2
             # new_vector = curr_vector + 0.3,これだと次のベクトルが変わらない可能性がある
             new_keywords = vectors.wv.similar_by_vector(new_vector)
             for k, _ in new_keywords:
@@ -97,7 +97,7 @@ class QuerySearchProblem(SearchProblem, ABC):
         return v
 
 
-initial_query = "作成"
+initial_query = "工作"
 problem = QuerySearchProblem(initial_state=initial_query)
 result = simulated_annealing(problem, iterations_limit=10, viewer=ConsoleViewer())
 # result = hill_climbing(problem, iterations_limit=10, viewer=None)
