@@ -54,25 +54,26 @@ start = model.wv[first_word]
 start.flags.writeable = True
 winner_list = []
 max_rank = return_rank(first_word)
-for i in range(5):
-    next_vector = start
-    # print(start)
-    next_vector1 = start
-    next_vector1 += 0.06
-    # print(f"next_vector1:{next_vector1}")
-    word1 = model.wv.similar_by_vector(vector=next_vector1, topn=2, restrict_vocab=None)[1][0]
-    print(f"word1は{word1}")
-    next_vector2 = start
-    next_vector2 -= 0.06
-    # print(f"next_vector2:{next_vector2}")
-    word2 = model.wv.similar_by_vector(vector=next_vector2, topn=2, restrict_vocab=None)[1][0]
-    print(f"word2は{word2}")
-    if return_rank(word1) > return_rank(word2):
-        start = next_vector1
-        print(f"winnerは{word1}")
-        print(start)
-    else:
-        start = next_vector2
-        print(f"winnerは{word2}")
+# for i in range(5):
+#     next_vector = start
+#     # print(start)
+#     next_vector1 = start
+#     next_vector1 += 0.06
+#     # print(f"next_vector1:{next_vector1}")
+#     word1 = model.wv.similar_by_vector(vector=next_vector1, topn=2, restrict_vocab=None)[1][0]
+#     print(f"word1は{word1}")
+#     next_vector2 = start
+#     next_vector2 -= 0.06
+#     # print(f"next_vector2:{next_vector2}")
+#     word2 = model.wv.similar_by_vector(vector=next_vector2, topn=2, restrict_vocab=None)[1][0]
+#     print(f"word2は{word2}")
+#     if return_rank(word1) > return_rank(word2):
+#         start = next_vector1
+#         print(f"winnerは{word1}")
+#         print(start)
+#     else:
+#         start = next_vector2
+#         print(f"winnerは{word2}")
         # print(start)
 
+print(return_rank('Python'))

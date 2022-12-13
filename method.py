@@ -10,7 +10,7 @@ def return_rank(query):
     # 上位から何件までのサイトを抽出するか指定する
     search = query
     target = '初心者がPythonで作れるもの5選！すぐに作れるものを徹底解説'
-    how_page = 30 + 1
+    how_page = 50 + 1
 
     print(f'【検索ワード】{search}')
 
@@ -65,3 +65,43 @@ def make_next_word(select_word):
     return next_word[0][0]
 
 
+def return_rank2(query):
+    # 上位から何件までのサイトを抽出するか指定する
+    global site_title
+    same_query1 = 'Python'
+    same_query2 = '初心者'
+    search = query
+    target = '初心者がPythonで作れるもの5選！すぐに作れるものを徹底解説'
+    how_page = 50 + 1
+
+    # print(f'【検索ワード】{search}')
+
+    # Googleから検索結果ページを取得する
+    url = f'https://www.google.co.jp/search?hl=ja&num={how_page}&q={same_query1}+{same_query2}+{search}'
+    request = requests.get(url)
+
+    # Googleのページ解析を行う
+    soup = BeautifulSoup(request.text, "html.parser")
+    search_site_list = soup.select('div.kCrYT > a')
+
+    num = random.randint(1, 10)
+    rank1 = 1 / (50 + num)
+
+    # ページ解析と結果の出力
+    for rank, site in zip(range(1, how_page), search_site_list):
+        try:
+            site_title = site.select('h3.zBAuLc')[0].text
+        except IndexError:
+            # site_title = site.select('img')[0]['alt']
+            site_url = site['href'].replace('/url?q=', '')
+        # 結果を出力する
+        if site_title == target:
+            # print('「初心者がPythonで作れるもの5選！すぐに作れるものを徹底解説」' + 'の順位は' + str(rank))
+            # print(str(rank) + "位: " + site_title)
+            rank1 = 1 / rank
+            return rank1
+    return rank1
+
+
+
+print(1/return_rank2('　'))
