@@ -51,7 +51,7 @@ def return_rank(query):
     # 上位から何件までのサイトを抽出するか指定する
     search = query
     target = '初心者がPythonで作れるもの5選！すぐに作れるものを徹底解説'
-    how_page = 30 + 1
+    how_page = 50 + 1
 
     print(f'【検索ワード】{search}')
 

@@ -21,28 +21,29 @@ vectors = word2vec.Word2Vec.load("word2vec.gensim.model")
 def return_rank(query):
     # 上位から何件までのサイトを抽出するか指定する
     global site_title
-    same_query1 = 'Python'
-    same_query2 = '初心者'
-    # same_query1 = '1人暮らし'
-    # same_query2 = '家'
+    global same_query1
+    same_query1 = '卒論'
+    global same_query2
+    same_query2 = '書きかた'
+    # same_query1 = '健康'
     search = query
-    target = '初心者がPythonで作れるもの5選！すぐに作れるものを徹底解説'
-    # target = '一人暮らし部屋のレイアウト！1R&1Kのコーディネート - CLAS'
+    target = '卒論の書き方と構成・項目別サンプル・卒論計画書の書き方'
+    # target = 'https://www.e-life.jp/column/trend/2282/'
     how_page = 50 + 1
 
     # print(f'【検索ワード】{search}')
 
     # Googleから検索結果ページを取得する
-    url = f'https://www.google.co.jp/search?hl=ja&num={how_page}&q={same_query1}+{same_query2}+{search}'
+    url = f'https://www.google.co.jp/search?hl=ja&num={how_page}&q={same_query1}+{search}'
     request = requests.get(url)
 
     # Googleのページ解析を行う
     soup = BeautifulSoup(request.text, "html.parser")
     search_site_list = soup.select('div.kCrYT > a')
 
-    num = random.randint(1, 30)
-    rank1 = 1 / (50 + num)
-
+    # num = random.randint(1, 10)
+    # rank1 = 1 / (50 + num)
+    rank1 = 1/50
     # ページ解析と結果の出力
     for rank, site in zip(range(1, how_page), search_site_list):
         # site_title = site.select('h3.zBAuLc')[0].text
@@ -71,7 +72,7 @@ class QuerySearchProblem(SearchProblem):
         actions = [curr_query]
         curr_vector = vectors[curr_query]
         for _ in range(NUM_CANDIDATES):
-            new_vector = curr_vector + np.random.uniform(size=curr_vector.size, low=-0.5, high=0.5)
+            new_vector = curr_vector + np.random.uniform(size=curr_vector.size, low=-0.2, high=0.2)
             new_keywords = vectors.similar_by_vector(new_vector, topn=NUM_CANDIDATES)
             for k, _ in new_keywords:
                 # 現在のqueryと異なり，かつすでにクエリ候補に入っていない単語をクエリ候補とする
@@ -92,16 +93,17 @@ class QuerySearchProblem(SearchProblem):
         # d = curr_vector - target_vector
         # v = 1.0 / (1.0 + np.linalg.norm(d))
         v = return_rank(curr_query)
-        print(f"query = {curr_query}, 順位={1/v}")
+        print(f"query = 「{same_query1} {same_query2} {curr_query}」 順位={1/v}")
         return v
 
 
-initial_query = "説明"
-problem = QuerySearchProblem(initial_state=initial_query)
+initial_query = "例"
+# problem = QuerySearchProblem(initial_state=initial_query)
 # result = simulated_annealing(problem, iterations_limit=100, viewer=ConsoleViewer())
-result = hill_climbing_stochastic(problem, iterations_limit=10, viewer=ConsoleViewer())
+# result = hill_climbing_stochastic(problem, iterations_limit=30, viewer=ConsoleViewer())
 
-print(result.path())
+# print(result.path())
+print(return_rank('例'))
 # a = vectors.wv['Python']
 # print(a)
 # print(vectors.similar_by_vector(a,topn = 5))

@@ -14,13 +14,15 @@ from bs4 import BeautifulSoup
 def return_rank(query):
     # 上位から何件までのサイトを抽出するか指定する
     global site_title
+    # same_query1 = '卒論'
+    # same_query2 = '書き方'
+    global same_query1
     same_query1 = 'Python'
-    same_query2 = '初心者'
-    # same_query1 = '1人暮らし'
-    # same_query2 = '家'
+    global same_query2
+    same_query2 = 'リスト'
     search = query
-    target = '初心者がPythonで作れるもの5選！すぐに作れるものを徹底解説'
-    # target = '一人暮らし部屋のレイアウト！1R&1Kのコーディネート - CLAS'
+    # target = '【必読！】文系学生のための卒論・修論の書き方 - 403 Dialogue'
+    target = 'Python リストの仕組みと使い方のサンプル(list)'
     how_page = 50 + 1
 
     # print(f'【検索ワード】{search}')
@@ -57,7 +59,7 @@ def return_rank(query):
     return rank1
 
 
-NUM_CANDIDATES = 2  # 一度に探索する単語の数
+NUM_CANDIDATES = 5  # 一度に探索する単語の数
 
 vectors = model = word2vec.Word2Vec.load("word2vec.gensim.model")
 
@@ -73,7 +75,7 @@ class QuerySearchProblem(SearchProblem, ABC):
         actions = []
         curr_vector = vectors.wv[curr_query]
         for _ in range(NUM_CANDIDATES):
-            new_vector = curr_vector + (np.random.standard_normal(curr_vector.size))*0.2
+            new_vector = curr_vector + (np.random.standard_normal(curr_vector.size))*0.05
             # new_vector = curr_vector + 0.3,これだと次のベクトルが変わらない可能性がある
             new_keywords = vectors.wv.similar_by_vector(new_vector)
             for k, _ in new_keywords:
@@ -96,13 +98,13 @@ class QuerySearchProblem(SearchProblem, ABC):
         # v = 1.0 / (1.0 + np.linalg.norm(d))
         # print(f"query = {curr_query}, value={v}")
         v = return_rank(curr_query)
-        print(f"検索ワード：Python 初心者 {curr_query},検索順位={1 / v}")
+        print(f"検索ワード：{same_query1} {same_query2} {curr_query},検索順位={1 / v}")
         return v
 
 
-initial_query = "徹底"
+initial_query = "使い方"
 problem = QuerySearchProblem(initial_state=initial_query)
-result = simulated_annealing(problem, iterations_limit=10, viewer=ConsoleViewer())
+result = simulated_annealing(problem, iterations_limit=50, viewer=ConsoleViewer())
 # result = hill_climbing(problem, iterations_limit=10, viewer=None)
 
 print(result.path())

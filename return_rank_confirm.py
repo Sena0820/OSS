@@ -7,9 +7,6 @@ from gensim.models import KeyedVectors
 from gensim.models import word2vec
 
 
-# from gensim.models import KeyedVectors
-
-
 # この関数はあるクエリで検索した際に指定したサイトで何位上位かを返してくれる
 def return_rank(query):
     # 上位から何件までのサイトを抽出するか指定する
@@ -17,12 +14,12 @@ def return_rank(query):
     # same_query1 = '卒論'
     # same_query2 = '書き方'
     global same_query1
-    same_query1 = '卒論'
+    same_query1 = 'Python'
     global same_query2
-    same_query2 = '書き方'
+    same_query2 = '初心者'
     search = query
     # target = '【必読！】文系学生のための卒論・修論の書き方 - 403 Dialogue'
-    target = 'レポート・卒論の書き方初級編'
+    target = '初心者がPythonで作れるもの5選！すぐに作れるものを徹底解説'
     how_page = 50 + 1
 
     # print(f'【検索ワード】{search}')
@@ -134,14 +131,6 @@ def make_next_word(select_word):
 #     print(1/return_rank(i))
 
 # vectors = word2vec.Word2Vec.load("word2vec.gensim.model")
-model_path = "chive-1.2-mc30.kv"
-
-# モデルの読み込み
-# wv = word2vec.models.KeyedVectors.load(model_path)
-# vectors: KeyedVectors = KeyedVectors.load("chive-1.2-mc30.kv")
-# # 類似度上位10件を取得
-# match = vectors.most_similar("SEO", topn=10)
-# print(match)
 # k = vectors.wv['使い方']
 # a = vectors.wv.similar_by_vector(k, topn=50, restrict_vocab=None)
 # print(a)
@@ -149,15 +138,4 @@ model_path = "chive-1.2-mc30.kv"
 #     vec = a[element][0]
 #     print(f"{vec}:{1/return_rank(vec)}")
 
-# print(1 / return_rank('初級'))
-# a = ['s','k','g']
-# print(a)
-# print(a[-1])
-# k = vectors.wv['サンタクロース']
-# kk = vectors.wv.similar_by_vector(k, topn=50, restrict_vocab=None)
-# print(vectors.wv.index2word)
-akb = [12, 24, 34]
-weight = [1 for i in akb]
-print(akb)
-print(weight)
-print([weight])
+print(1 / return_rank('作れるもの'))

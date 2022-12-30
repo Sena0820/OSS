@@ -13,7 +13,7 @@ NUM_CANDIDATES = 5  # 一度に探索する単語の数
 
 vectors = word2vec.Word2Vec.load("word2vec.gensim.model")
 
-target = "初心者"
+target = "ドキュメント"
 target_vector = vectors[target]
 
 
@@ -57,7 +57,7 @@ class QuerySearchProblem(SearchProblem):
         actions = [curr_query]
         curr_vector = vectors[curr_query]
         for _ in range(NUM_CANDIDATES):
-            new_vector = curr_vector + np.random.uniform(size=curr_vector.size, low=-0.5, high=0.5)
+            new_vector = curr_vector + np.random.uniform(size=curr_vector.size, low=-0.2, high=0.2)
             new_keywords = vectors.similar_by_vector(new_vector, topn=NUM_CANDIDATES)
             for k, _ in new_keywords:
                 # 現在のqueryと異なり，かつすでにクエリ候補に入っていない単語をクエリ候補とする
@@ -81,11 +81,11 @@ class QuerySearchProblem(SearchProblem):
         return v
 
 
-initial_query = "若手"
+initial_query = "使い方"
 problem = QuerySearchProblem(initial_state=initial_query)
 # result = simulated_annealing(problem, iterations_limit=100, viewer=ConsoleViewer())
-result = hill_climbing_stochastic(problem, iterations_limit=50, viewer=ConsoleViewer())
-
+result = hill_climbing_stochastic(problem, iterations_limit=100, viewer=ConsoleViewer())
+# print(double_list)
 # print(result.path())
 # a = vectors.wv['Python']
 # print(a)
