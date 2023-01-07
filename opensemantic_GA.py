@@ -4,16 +4,51 @@ from simpleai.search import SearchProblem
 from simpleai.search.local import genetic
 from simpleai.search.viewers import ConsoleViewer
 from gensim.models import KeyedVectors
+# from gensim.models import word2vec
 from gensim.models import word2vec
+import requests
+from bs4 import BeautifulSoup
 
 # vectors: KeyedVectors = KeyedVectors.load("../chive-1.2-mc30_gensim/chive-1.2-mc30.kv")
-# vectors = model = word2vec.Word2Vec.load("word2vec.gensim.model")
-vectors: KeyedVectors = KeyedVectors.load("chive-1.2-mc30.kv")
-start = "若者"
+vectors = model = word2vec.Word2Vec.load("word2vec.gensim.model")
+# vectors: KeyedVectors = KeyedVectors.load("chive-1.2-mc30.kv")
+start = ""
 start_vector = vectors[start]
 
 target = "クリスマス"
 target_vector = vectors[target]
+
+def return_semantic_rank(query):
+    global site_title
+    search = query
+    target = 'wiki_68'
+    print(f'【検索ワード】{search}')
+    point_page = [1, 11, 21, 31, 41]
+    for s in point_page:
+        url = f'http://yoda.cla.kobe-u.ac.jp:8080/search/?&s={s}view=list&zoom=years&q={search}'
+        request = requests.get(url)
+        soup = BeautifulSoup(request.text, "html.parser")
+        search_site_list = soup.find_all('a', class_='title')
+        query_rank = 50
+        for rank, site in zip(range(1, 10), search_site_list):
+            try:
+                site_title = site.text
+            except IndexError:
+                site_url = site['href'].replace('/url?q=', '')
+            # 結果を出力する
+            if site_title == target:
+                query_rank = rank
+                # print(query_rank)
+                if s == 11:
+                    query_rank += 10
+                if s == 21:
+                    query_rank += 20
+                if s == 31:
+                    query_rank += 30
+                if s == 41:
+                    query_rank += 40
+                return query_rank
+    return query_rank
 
 
 class QuerySearchProblem(SearchProblem):
@@ -50,18 +85,19 @@ class QuerySearchProblem(SearchProblem):
     # 状態の価値を計算
     # ここではベクトルの差（ノルム）の逆数を価値としている
     def value(self, curr_query):
-        v = 0
-        try:
-            curr_vector = vectors[curr_query]
-            # d = curr_vector - target_vector
-            # v = 100.0 / (1.0 + np.linalg.norm(d))
-            d = np.linalg.norm(curr_vector - target_vector) ** 2
-            v = 100.0 / (1.0 + d)
-            # np.linalg.normは距離を測る関数
-            # これの意味聞く！
-        except Exception as e:
-            print(e)
-            print(curr_query)
+        # v = 0
+        v = return_semantic_rank(curr_query)
+        # try:
+        #     curr_vector = vectors[curr_query]
+        #     # d = curr_vector - target_vector
+        #     # v = 100.0 / (1.0 + np.linalg.norm(d))
+        #     d = np.linalg.norm(curr_vector - target_vector) ** 2
+        #     v = 100.0 / (1.0 + d)
+        #     # np.linalg.normは距離を測る関数
+        #     # これの意味聞く！
+        # except Exception as e:
+        #     print(e)
+        #     print(curr_query)
         return v
 
 '''

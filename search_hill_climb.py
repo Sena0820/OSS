@@ -98,12 +98,12 @@ class QuerySearchProblem(SearchProblem):
 
 
 initial_query = "例"
-# problem = QuerySearchProblem(initial_state=initial_query)
+problem = QuerySearchProblem(initial_state=initial_query)
 # result = simulated_annealing(problem, iterations_limit=100, viewer=ConsoleViewer())
-# result = hill_climbing_stochastic(problem, iterations_limit=30, viewer=ConsoleViewer())
+result = hill_climbing_stochastic(problem, iterations_limit=50, viewer=ConsoleViewer())
 
 # print(result.path())
-print(return_rank('例'))
+# print(return_rank('例'))
 # a = vectors.wv['Python']
 # print(a)
 # print(vectors.similar_by_vector(a,topn = 5))

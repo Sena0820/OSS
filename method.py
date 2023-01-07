@@ -156,8 +156,9 @@ model_path = "chive-1.2-mc30.kv"
 # k = vectors.wv['サンタクロース']
 # kk = vectors.wv.similar_by_vector(k, topn=50, restrict_vocab=None)
 # print(vectors.wv.index2word)
-akb = [12, 24, 34]
-weight = [1 for i in akb]
-print(akb)
-print(weight)
-print([weight])
+# akb = [12, 24, 34]
+# weight = [1 for i in akb]
+# print(akb)
+# print(weight)
+# print([weight])
+print(1/return_rank('例'))
