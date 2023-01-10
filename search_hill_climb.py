@@ -14,9 +14,67 @@ NUM_CANDIDATES = 5  # 一度に探索する単語の数
 
 vectors = word2vec.Word2Vec.load("word2vec.gensim.model")
 
+queryA = '卒論'
+queryB = '構成'
+queryC = 'サンプル'
+how_page2 = 31
+url2 = f'https://www.google.co.jp/search?hl=ja&num={how_page2}&q={queryA}+{queryB}+{queryC}'
+request2 = requests.get(url2)
+soup2 = BeautifulSoup(request2.text, "html.parser")
+search_site_list2 = soup2.find_all('a', class_='title')
+good_site_list = []
+for site2 in search_site_list2:
+    site_title2 = site2.text
+    good_site_list.append(site_title2)
+# print(good_site_list)
+
 # target = "初心者"
 # target_vector = vectors[target]
 
+
+def return_match_list(query):
+    # 上位から何件までのサイトを抽出するか指定する
+    list_points = 0
+    global site_title
+    global same_query1
+    same_query1 = '卒論'
+    global same_query2
+    same_query2 = '書きかた'
+    # same_query1 = '健康'
+    search = query
+    target = '卒論の書き方と構成・項目別サンプル・卒論計画書の書き方'
+    # target = 'https://www.e-life.jp/column/trend/2282/'
+    how_page = 50 + 1
+
+    # print(f'【検索ワード】{search}')
+
+    # Googleから検索結果ページを取得する
+    url = f'https://www.google.co.jp/search?hl=ja&num={how_page}&q={same_query1}+{search}'
+    request = requests.get(url)
+
+    # Googleのページ解析を行う
+    soup = BeautifulSoup(request.text, "html.parser")
+    search_site_list = soup.select('div.kCrYT > a')
+
+    # num = random.randint(1, 10)
+    # rank1 = 1 / (50 + num)
+    rank1 = 1/50
+    # ページ解析と結果の出力
+    for rank, site in zip(range(1, how_page), search_site_list):
+        # site_title = site.select('h3.zBAuLc')[0].text
+        try:
+            site_title = site.select('h3.zBAuLc')[0].text
+            # print(site_title)
+        except IndexError:
+            # site_title = site.select('img')[0]['alt']
+            site_title = 'abc'
+            # site_url = site['href'].replace('/url?q=', '')
+            # print('error')
+            # print(site_title)
+            # 結果を出力する
+        if site_title in good_site_list:
+            list_points += 1
+    return list_points
 
 def return_rank(query):
     # 上位から何件までのサイトを抽出するか指定する
@@ -93,8 +151,10 @@ class QuerySearchProblem(SearchProblem):
         # d = curr_vector - target_vector
         # v = 1.0 / (1.0 + np.linalg.norm(d))
         v = return_rank(curr_query)
-        print(f"query = 「{same_query1} {same_query2} {curr_query}」 順位={1/v}")
-        return v
+        v2 = return_match_list(curr_query)
+        # print(f"query = 「{same_query1} {same_query2} {curr_query}」 順位={1/v}")
+        print(f'クエリ：{curr_query}, 順位:{1/v}, 合致：{v2}, score:{v + v2 / 10}')
+        return v + v2/10
 
 
 initial_query = "例"

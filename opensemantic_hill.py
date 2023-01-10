@@ -13,6 +13,8 @@ from bs4 import BeautifulSoup
 NUM_CANDIDATES = 5  # 一度に探索する単語の数
 
 vectors = word2vec.Word2Vec.load("word2vec.gensim.model")
+highrank_list = {}
+
 
 # target = "初心者"
 # target_vector = vectors[target]
@@ -20,11 +22,12 @@ vectors = word2vec.Word2Vec.load("word2vec.gensim.model")
 def return_semantic_rank(query):
     global site_title
     search = query
-    target = 'wiki_68'
-    print(f'【検索ワード】{search}')
+    search2 = 'アメリカ'
+    target = 'wiki_72'
+    # print(f'【検索ワード】{search}')
     point_page = [1, 11, 21, 31, 41]
     for s in point_page:
-        url = f'http://yoda.cla.kobe-u.ac.jp:8080/search/?&s={s}view=list&zoom=years&q={search}'
+        url = f'http://yoda.cla.kobe-u.ac.jp:8080/search/?&s={s}view=list&zoom=years&q={search2}+{search}'
         request = requests.get(url)
         soup = BeautifulSoup(request.text, "html.parser")
         search_site_list = soup.find_all('a', class_='title')
@@ -77,12 +80,16 @@ class QuerySearchProblem(SearchProblem):
         # curr_vector = vectors[curr_query]
         # d = curr_vector - target_vector
         # v = 1.0 / (1.0 + np.linalg.norm(d))
-        v = 1/return_semantic_rank(curr_query)
-        print(f"query = {curr_query} 順位={1/v}")
-        return v
+        v = return_semantic_rank(curr_query)
+        print(f"query = {curr_query} 順位={v}")
+        if v < 20 and curr_query not in highrank_list.keys():
+            highrank_list[curr_query] = v
+        return 1/v
 
 
-initial_query = "警察"
+initial_query = "開発"
 problem = QuerySearchProblem(initial_state=initial_query)
 # result = simulated_annealing(problem, iterations_limit=100, viewer=ConsoleViewer())
 result = hill_climbing_stochastic(problem, iterations_limit=50, viewer=ConsoleViewer())
+score_sorted = sorted(highrank_list.items(), key=lambda x:x[1])
+print(f'high_rank リスト：{score_sorted}')
