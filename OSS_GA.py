@@ -135,7 +135,7 @@ result = genetic(
     population_size=100,
     crossover_rate=0.8,
     mutation_chance=0.1,
-    iterations_limit=10,
+    iterations_limit=50,
     viewer=ConsoleViewer(),
 )
 
