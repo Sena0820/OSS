@@ -1,21 +1,37 @@
+import pickle
+
 import numpy as np
 import random
 from simpleai.search import SearchProblem
 from simpleai.search.local import genetic
 from simpleai.search.viewers import ConsoleViewer
 from gensim.models import KeyedVectors
-from gensim.models import word2vec as wv
+from wikipedia2vec import Wikipedia2Vec
+# from gensim.models import word2vec as wv
 # from gensim.models import word2vec
 import requests
 from bs4 import BeautifulSoup
 
+vectors = Wikipedia2Vec.load()
+
+
+# vectors = KeyedVectors.load("enwiki_20180420_100d.pkl")
+# def load_model():
+#     # print(datetime.now())
+#     with open('enwiki_20180420_100d.pkl', 'rb') as fd:
+#         a = pickle.load(fd)
+#     # print(datetime.now())
+#     return a
+#
+#
+# vectors = load_model()
 # vectors: KeyedVectors = KeyedVectors.load("../chive-1.2-mc30_gensim/chive-1.2-mc30.kv")
-vectors = model = wv.Word2Vec.load("word2vec.gensim.model")
+# vectors = model = wv.Word2Vec.load("word2vec.gensim.model")
 # vectors: KeyedVectors = KeyedVectors.load("chive-1.2-mc30.kv")
-start = "発明"
+start = "people"
 start_vector = vectors[start]
 
-target = "エジソン"
+target = "god"
 target_vector = vectors[target]
 
 # この下で定めたクエリ（最適だと考えられるクエリで検索した時の検索結果のリストを作る
@@ -34,6 +50,8 @@ for site2 in search_site_list2:
 
 search2 = 'アメリカ'
 target_site = 'wiki_72'
+
+
 def return_match_list(query):
     global site_title
     search = query
@@ -56,6 +74,7 @@ def return_match_list(query):
             if site_title in good_site_list:
                 list_points += 1
     return list_points
+
 
 def return_semantic_rank(query):
     global site_title
@@ -94,6 +113,7 @@ def return_semantic_rank(query):
 
 highrank_list = {}
 
+
 class QuerySearchProblem(SearchProblem):
     def generate_random_state(self):
         new_vec = start_vector + np.random.standard_normal(size=start_vector.size)
@@ -101,6 +121,7 @@ class QuerySearchProblem(SearchProblem):
         # return candidates[-1][0]
         return candidates[-1][0]
         # [-1]は最後の一個という意味
+
     def crossover(self, query1, query2):
         vec1 = vectors[query1]
         vec2 = vectors[query2]
@@ -113,7 +134,7 @@ class QuerySearchProblem(SearchProblem):
                 break
         return new_query
 
-    def mutate(self, query): # 突然変異のこと
+    def mutate(self, query):  # 突然変異のこと
         vec = vectors[query]
         new_vec = vec + np.random.standard_normal(size=vec.size)
         candidates = vectors.similar_by_vector(new_vec, topn=10)
@@ -142,27 +163,29 @@ class QuerySearchProblem(SearchProblem):
         # except Exception as e:
         #     print(e)
         #     print(curr_query)
-        print(f'クエリ：{curr_query}, 順位:{v}, 合致：{v2}, score:{1/v + v2/10}')
+        print(f'クエリ：{curr_query}, 順位:{v}, 合致：{v2}, score:{1 / v + v2 / 10}')
         if v < 30 and curr_query not in highrank_list.keys():
-            highrank_list[curr_query] = 1/v + v2/10
-        return 1/v + v2/10
+            highrank_list[curr_query] = 1 / v + v2 / 10
+        return 1 / v + v2 / 10
+
 
 problem = QuerySearchProblem()
 # result = simulated_annealing(problem, iterations_limit=100, viewer=ConsoleViewer())
 # result = genetic(problem, population_size=100, mutation_chance=0.5, iterations_limit=50, viewer=ConsoleViewer())
-result = genetic(
-    problem,
-    population_size=100,
-    crossover_rate=0.8,
-    mutation_chance=0.1,
-    iterations_limit=10,
-    viewer=ConsoleViewer(),
-)
+# result = genetic(
+#     problem,
+#     population_size=100,
+#     crossover_rate=0.8,
+#     mutation_chance=0.1,
+#     iterations_limit=10,
+#     viewer=ConsoleViewer(),
+# )
+#
+# print(f'最適と仮定したクエリ：「{queryA} {queryB} {queryC}」')
+# print(f'固定クエリ：{search2}')
+# print(result.state, result.path())
+# score_sorted = sorted(highrank_list.items(), key=lambda x:x[1], reverse=True)
+# print(f'high_rank リスト：{score_sorted}')
 
-print(f'最適と仮定したクエリ：「{queryA} {queryB} {queryC}」')
-print(f'固定クエリ：{search2}')
-print(result.state, result.path())
-score_sorted = sorted(highrank_list.items(), key=lambda x:x[1], reverse=True)
-print(f'high_rank リスト：{score_sorted}')
 
-
+print(vectors['cat'])

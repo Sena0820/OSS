@@ -138,4 +138,4 @@ def make_next_word(select_word):
 #     vec = a[element][0]
 #     print(f"{vec}:{1/return_rank(vec)}")
 
-print(1 / return_rank('作れるもの'))
+print(1 / return_rank('　'))
