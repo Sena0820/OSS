@@ -121,10 +121,10 @@ class QuerySearchProblem(SearchProblem):
         # v = 0
         v = return_semantic_rank(curr_query)
         v2 = return_match_list(curr_query)
-        print(f'クエリ：{curr_query}, 順位:{v}, 正解リストの合致数：{v2}, score:{1 / v + v2 / 10}')
-        if v < 30 and curr_query not in highrank_list.keys():
-            highrank_list[curr_query] = 1 / v + v2 / 100
-        return 1 / v + v2 / 10
+        print(f'クエリ：{curr_query}, 順位:{v}, 正解リストの合致数：{v2}, score:{1 / v + v2 / 130}')
+        if v < 40 and curr_query not in highrank_list.keys():
+            highrank_list[curr_query] = 1 / v + v2 / 130
+        return 1 / v + v2 / 130
 
 
 problem = QuerySearchProblem()
@@ -142,4 +142,4 @@ print(f'最適と仮定したクエリ：「{good_queryA} {good_queryB} {good_qu
 print(f'固定クエリ：{pin_query}')
 print(result.state, result.path())
 score_sorted = sorted(highrank_list.items(), key=lambda x:x[1], reverse=True)
-print(f'high_rank リスト：{score_sorted}')
+print(f'検索クエリ改善過程：{score_sorted}')
