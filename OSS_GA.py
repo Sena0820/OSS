@@ -12,7 +12,6 @@ from bs4 import BeautifulSoup
 vectors = KeyedVectors.load_word2vec_format("enwiki_20180420_100d.txt", binary=False)
 highrank_list = {}
 
-
 # ↓ ↓ ↓ ↓　変える
 pin_query = 'python'  # 固定するクエリ
 start_query = "read"  # 最初に指定するクエリ
