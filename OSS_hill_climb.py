@@ -11,19 +11,19 @@ import requests
 from bs4 import BeautifulSoup
 
 # ↓ ↓ ↓ ↓　変える
-NUM_CANDIDATES = 5  # 一度に探索する単語の数
+NUM_CANDIDATES = 10  # 一度に探索する単語の数
 pin_query = 'fish'
 target_site = '2781.txt'
-start_query = "sorry"
+start_query = "water"
 # この下で定めたクエリ（最適だと考えられるクエリで検索した時の検索結果のリストを作る）
 good_queryA = 'whale'
 good_queryB = 'fish'
 good_queryC = 'camel'
-how_list = 10 + 1  # 何個のサイトにするか指定
+how_list = 50 + 1  # 何個のサイトを正解リストに入れるか指定
 # ↑ ↑ ↑ ↑
 
-vectors = KeyedVectors.load_word2vec_format("enwiki_20180420_100d.txt", binary=False)
-
+# vectors = KeyedVectors.load_word2vec_format("enwiki_20180420_100d.txt", binary=False)
+vectors = KeyedVectors.load_word2vec_format("GoogleNews-vectors-negative300.bin", binary=True)
 highrank_list = {}
 
 start_vector = vectors[start_query]
@@ -52,7 +52,6 @@ def return_match_list(query):
                 site_title = site.text
             except IndexError:
                 site_url = site['href'].replace('/url?q=', '')
-            # 結果を出力する
             if site_title in good_site_list:
                 list_points += 1
     return list_points
@@ -74,7 +73,6 @@ def return_semantic_rank(query):
                 site_title = site.text
             except IndexError:
                 site_url = site['href'].replace('/url?q=', '')
-            # 結果を出力する
             if site_title == target_site:
                 query_rank = rank
                 if s == 11:
@@ -105,8 +103,6 @@ class QuerySearchProblem(SearchProblem):
                     break
         return actions
 
-    # 状態にアクションを適用した際の次の状態を生成
-    # アクション＝次のクエリ候補なのでそのまま戻す
     def result(self, curr_query, action):
         return action
 
@@ -114,14 +110,15 @@ class QuerySearchProblem(SearchProblem):
         # v = 0
         v = return_semantic_rank(curr_query)
         v2 = return_match_list(curr_query)
-        print(f'クエリ：{curr_query}, 順位:{v}, 正解リストの合致数：{v2}, score:{1 / v + v2 / 130}')
+        print(f'クエリ：{curr_query}, 順位:{v}, 正解リストの合致数：{v2}, score:{1 / v + v2 / 200}')
         if v < 40 and curr_query not in highrank_list.keys():
-            highrank_list[curr_query] = 1 / v + v2 / 130
-        return 1 / v + v2 / 130
+            highrank_list[curr_query] = 1 / v + v2 / 200
+        return 1 / v + v2 / 200
+
 
 problem = QuerySearchProblem(initial_state=start_query)
-result = hill_climbing_stochastic(problem, iterations_limit=50, viewer=ConsoleViewer())
+result = hill_climbing_stochastic(problem, iterations_limit=100, viewer=ConsoleViewer())
 score_sorted = sorted(highrank_list.items(), key=lambda x:x[1], reverse=True)
 print(f'最適と仮定したクエリ：「{good_queryA} {good_queryB} {good_queryC}」')
-print(f'初期クエリでの検索順位:34位')
+print(f'初期クエリでの検索順位:41位')
 print(f'検索クエリ改善過程：{score_sorted}')

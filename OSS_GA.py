@@ -4,23 +4,23 @@ from simpleai.search import SearchProblem
 from simpleai.search.local import genetic
 from simpleai.search.viewers import ConsoleViewer
 from gensim.models import KeyedVectors
+from gensim.models import word2vec
 import requests
 from bs4 import BeautifulSoup
 
-# vectors = Wikipedia2Vec.load()
-# vectors = word2vec.Word2Vec.load("enwiki_20180420_100d.txt")
-vectors = KeyedVectors.load_word2vec_format("enwiki_20180420_100d.txt", binary=False)
+vectors = KeyedVectors.load_word2vec_format("GoogleNews-vectors-negative300.bin", binary=True)
+
 highrank_list = {}
 
 # ↓ ↓ ↓ ↓　変える
-pin_query = 'python'  # 固定するクエリ
-start_query = "read"  # 最初に指定するクエリ
-target_site = '2530.txt'  # 検索順位を上げたいターゲット
+pin_query = 'fish'  # 固定するクエリ
+start_query = "water"  # 最初に指定するクエリ,これが最適クエリと離れすぎていたら無理かも
+target_site = '2781.txt'  # 検索順位を上げたいターゲット
 # この下で定めたクエリ（最適だと考えられるクエリで検索した時の検索結果のリストを作る）
-good_queryA = 'python'  # 正解リストにする際の検索クエリ
-good_queryB = 'load'
-good_queryC = 'laborious'
-how_list = 10 + 1  # 何個のサイトにするか指定
+good_queryA = 'fish'  # 正解リストにする際の検索クエリ
+good_queryB = 'whale'
+good_queryC = 'camel'
+how_list = 50 + 1  # 何個のサイトを正解リストに入れるか指定
 # ↑ ↑ ↑ ↑
 
 start_vector = vectors[start_query]
@@ -49,7 +49,6 @@ def return_match_list(query):
                 site_title = site.text
             except IndexError:
                 site_url = site['href'].replace('/url?q=', '')
-            # 結果を出力する
             if site_title in good_site_list:
                 list_points += 1
     return list_points
@@ -71,7 +70,6 @@ def return_semantic_rank(query):
                 site_title = site.text
             except IndexError:
                 site_url = site['href'].replace('/url?q=', '')
-            # 結果を出力する
             if site_title == target_site:
                 query_rank = rank
                 if s == 11:
@@ -121,20 +119,19 @@ class QuerySearchProblem(SearchProblem):
         # v = 0
         v = return_semantic_rank(curr_query)
         v2 = return_match_list(curr_query)
-        print(f'クエリ：{curr_query}, 順位:{v}, 正解リストの合致数：{v2}, score:{1 / v + v2 / 130}')
-        if v < 40 and curr_query not in highrank_list.keys():
-            highrank_list[curr_query] = 1 / v + v2 / 130
-        return 1 / v + v2 / 130
+        print(f'クエリ：{curr_query}, 順位:{v}, 正解リストの合致数：{v2}, score:{1 / v + v2 / 200}')
+        if v < 50 and curr_query not in highrank_list.keys():
+            highrank_list[curr_query] = 1 / v + v2 / 200
+        return 1 / v + v2 / 200
 
 
 problem = QuerySearchProblem()
-# result = genetic(problem, population_size=100, mutation_chance=0.5, iterations_limit=50, viewer=ConsoleViewer())
 result = genetic(
     problem,
-    population_size=100,
+    population_size=50,
     crossover_rate=0.8,
-    mutation_chance=0.1,
-    iterations_limit=50,
+    mutation_chance=0.3,
+    iterations_limit=20,
     viewer=ConsoleViewer(),
 )
 
@@ -143,3 +140,4 @@ print(f'固定クエリ：{pin_query}')
 print(result.state, result.path())
 score_sorted = sorted(highrank_list.items(), key=lambda x:x[1], reverse=True)
 print(f'検索クエリ改善過程：{score_sorted}')
+
